@@ -25,7 +25,7 @@ func NewHub() *Hub {
 	}
 }
 
-func (h *Hub) run() {
+func (h *Hub) startBroadcast() {
 	for {
 		message := <-h.broadcast
 		h.lock.Lock()

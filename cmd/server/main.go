@@ -1,28 +1,26 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"snappchat/internal/server"
-	// gorillachat "snappchat/sample/gorilla-caht"
-
-	"github.com/nats-io/nats.go"
+	"os"
+	"snappchat/api/http"
+	app "snappchat/app/server"
+	config "snappchat/config/server"
 )
 
+var configPath = flag.String("config", "server_config.json", "configuration file")
+
 func main() {
-	// gorillachat.Run()
+	flag.Parse()
 
-	var (
-		NATSServer = "nats://localhost:4222" // NATS server address
-	)
-
-	nc, err := nats.Connect(NATSServer)
-	if err != nil {
-		log.Fatal("Error on connecting to nats: ", err)
+	if v := os.Getenv("CONFIG_PATH"); len(v) > 0 {
+		*configPath = v
 	}
 
-	hub := server.NewHub()
+	cfg := config.MustReadConfig(*configPath)
 
-	s := server.NewServer(nc, hub)
+	appContainer := app.MustNewApp(cfg)
 
-	log.Fatal(s.Run())
+	log.Fatal(http.Run(appContainer))
 }

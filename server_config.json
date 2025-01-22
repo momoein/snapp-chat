@@ -1,0 +1,9 @@
+{
+    "server": {
+        "httpPort": 8080
+    },
+    "nats": {
+        "host": "nats://localhost",
+        "port": 4222
+    }
+}
