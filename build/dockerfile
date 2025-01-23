@@ -1,0 +1,39 @@
+FROM golang:1.23 AS builder
+
+# Set environment variables for building
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 
+
+COPY . /app
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+# RUN go mod download
+
+# Build the Go application binary
+RUN go build -o /app/server ./cmd/server/main.go
+
+
+FROM alpine:3.21.0
+
+RUN apk add --no-cache ca-certificates
+
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Tehran
+
+WORKDIR /app
+
+# Copy the binary from the builder stage
+COPY --from=builder /app/server /app/server
+
+# Ensure the binary is executable
+RUN chmod +x /app/server
+
+EXPOSE 8080
+
+# Command to run the application
+CMD ["/app/server"]

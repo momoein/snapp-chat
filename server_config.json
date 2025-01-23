@@ -3,7 +3,7 @@
         "httpPort": 8080
     },
     "nats": {
-        "host": "nats://localhost",
+        "host": "nats",
         "port": 4222
     }
 }
