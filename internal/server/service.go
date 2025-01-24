@@ -1,7 +1,9 @@
 package server
 
 import (
+	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/nats-io/nats.go"
@@ -12,13 +14,17 @@ const (
 )
 
 type Service interface {
-	
-	// read message from client websocket and publish message.
+
+	// it add new client and
+	// listen for new message from client websocket and publish the message.
 	AddClient(conn *websocket.Conn)
 
 	// Subscribe to NATS for incoming messages
 	// and start broadcast messages to clients
 	Run()
+
+	// get online users in room.
+	GetUsers() []int
 }
 
 type service struct {
@@ -49,11 +55,12 @@ func (s *service) Run() {
 	s.hub.startBroadcast()
 }
 
-// read message from client websocket and publish message.
+// it add new client and
+// listen for new message from client websocket and publish the message.
 func (s *service) AddClient(conn *websocket.Conn) {
 	defer conn.Close()
 
-	client := &Client{conn: conn}
+	client := NewClient(conn, time.Now().UTC().Nanosecond())
 	s.hub.AddClient(client)
 	log.Println("New WebSocket client connected")
 
@@ -66,10 +73,29 @@ func (s *service) AddClient(conn *websocket.Conn) {
 		}
 		log.Printf("Message received from client: %s", string(msg))
 
+		userMsg := UserMessage{
+			UserID: client.ID(),
+			Message: string(msg),
+		}
+
+		userMsgByte, err := json.Marshal(userMsg)
+		if err != nil {
+			log.Printf("error on marshal user message: %v", err)
+			continue
+		}
+		
 		// Publish client message to NATS
-		err = s.nc.Publish(Subject, msg)
+		err = s.nc.Publish(Subject, userMsgByte)
 		if err != nil {
 			log.Printf("Error publishing to NATS: %v", err)
 		}
 	}
+}
+
+func (s *service) GetUsers() []int {
+	var users []int
+	for client := range s.hub.clients {
+		users = append(users, client.ID())
+	}
+	return users
 }

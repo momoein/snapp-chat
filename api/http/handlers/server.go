@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"snappchat/api/service"
@@ -54,4 +55,29 @@ func (h *ServerHandler) AddClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.svc.AddClient(conn)
+}
+
+func (h *ServerHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodGet {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    resp := h.svc.GetUsers()
+    
+    // Marshal the response to JSON
+    respByte, err := json.Marshal(resp)
+    if err != nil {
+        log.Printf("error on marshal response: %v", err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    // Set Content-Type header and write the response
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    _, err = w.Write(respByte)
+    if err != nil {
+        log.Printf("error on writing response: %v", err)
+    }
 }

@@ -30,4 +30,5 @@ func registerAPI(api string, svc *service.ServerService) {
 
 	// WebSocket handler
 	http.HandleFunc(api + "/ws", handler.AddClient)
+	http.HandleFunc(api + "/ws/users", handler.GetUsers)
 }
