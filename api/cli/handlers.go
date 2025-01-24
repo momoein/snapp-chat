@@ -150,18 +150,15 @@ func getMenuHandler(app app.App) Handler {
 }
 
 func showUsers(app app.App, g *gocui.Gui) error {
+	var users string
+
 	usersId, err := app.Service().GetUsers()
 	if err != nil {
-		return err
+		users = "cant fetch online users!"
 	}
 
-	var users string
 	for _, id := range usersId {
 		users = users + fmt.Sprintf("user-%d\n", id)
-	}
-
-	if len(usersId) == 0 {
-		users = "no connection with chat room!"
 	}
 
 	maxX, maxY := g.Size()
