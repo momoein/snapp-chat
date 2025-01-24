@@ -12,8 +12,17 @@ const (
 	ViewChatRoom   = "chatRoom"
 	ViewMessageBar = "messageBar"
 	ViewSendButton = "sendButton"
+	ViewUsers      = "users"
 )
 
+type MenuOption = string
+
+const (
+	OptJoinRoom  MenuOption = "join room"
+	OptLeaveRoom MenuOption = "leave room"
+	OptUsers     MenuOption = "users"
+	OptExit      MenuOption = "exit"
+)
 
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
@@ -21,16 +30,17 @@ func layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
-		v.Title = "menu"
+		v.Title = ViewMenu
 		if _, err = setCurrentViewOnTop(g, ViewMenu); err != nil {
 			return err
 		}
 		v.Highlight = true
-		v.SelBgColor = gocui.ColorGreen
+		v.SelBgColor = gocui.ColorCyan
 		v.SelFgColor = gocui.ColorBlack
-		fmt.Fprintln(v, "Item 1")
-		fmt.Fprintln(v, "Item 2")
-		fmt.Fprint(v, "Item 3\nItem 4")
+		fmt.Fprintln(v, OptJoinRoom)
+		fmt.Fprintln(v, OptLeaveRoom)
+		fmt.Fprintln(v, OptUsers)
+		fmt.Fprintln(v, OptExit)
 	}
 
 	chatRoom := NewTextWidget(ViewChatRoom, "chat room", false, maxX/4, 0, maxX-1, maxY-maxY/4-1, nil)
