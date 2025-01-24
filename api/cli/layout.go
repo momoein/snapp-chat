@@ -9,6 +9,7 @@ import (
 
 const (
 	ViewMenu       = "menu"
+	ViewWindow     = "window"
 	ViewChatRoom   = "chatRoom"
 	ViewMessageBar = "messageBar"
 	ViewSendButton = "sendButton"
@@ -21,6 +22,7 @@ const (
 	OptJoinRoom  MenuOption = "join room"
 	OptLeaveRoom MenuOption = "leave room"
 	OptUsers     MenuOption = "users"
+	OptHelp      MenuOption = "help"
 	OptExit      MenuOption = "exit"
 )
 
@@ -40,6 +42,7 @@ func layout(g *gocui.Gui) error {
 		fmt.Fprintln(v, OptJoinRoom)
 		fmt.Fprintln(v, OptLeaveRoom)
 		fmt.Fprintln(v, OptUsers)
+		fmt.Fprintln(v, OptHelp)
 		fmt.Fprintln(v, OptExit)
 	}
 
@@ -60,3 +63,18 @@ func layout(g *gocui.Gui) error {
 
 	return nil
 }
+
+const helpText = `
+Tab: Move between panels.
+Ctrl+C: Exit the application.
+
+Menu panel:
+	- Arrow Keys: Navigate between options.
+	- Enter: select highlighted option.
+Send button:
+	- Enter: send the message.
+Users window:
+	- Enter: close the window.
+Help window:
+	- Enter: close the window.
+`

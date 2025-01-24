@@ -37,7 +37,9 @@ func keybindings(g *gocui.Gui, app app.App) error {
 	if err = g.SetKeybinding(ViewMenu, gocui.KeyEnter, gocui.ModNone, getMenuHandler(app)); err != nil { 
 		return err
 	}
-	if err = g.SetKeybinding(ViewUsers, gocui.KeyEnter, gocui.ModNone, delUsersView); err != nil {
+	
+	// window handler
+	if err = g.SetKeybinding(ViewWindow, gocui.KeyEnter, gocui.ModNone, closeWindow); err != nil {
 		return err
 	}
 

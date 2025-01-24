@@ -140,6 +140,8 @@ func getMenuHandler(app app.App) Handler {
 			app.Service().LeaveRoom()
 		case OptUsers:
 			return showUsers(app, g)
+		case OptHelp:
+			return showHelp(g)
 		case OptExit:
 			app.Service().LeaveRoom()
 			return gocui.ErrQuit
@@ -161,24 +163,32 @@ func showUsers(app app.App, g *gocui.Gui) error {
 		users = users + fmt.Sprintf("user-%d\n", id)
 	}
 
+	return openWindow(OptUsers, users, g)
+}
+
+func showHelp(g *gocui.Gui) error {
+	return openWindow(OptHelp, helpText, g)
+}
+
+func openWindow(title, text string, g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if v, err := g.SetView(ViewUsers, maxX/2-30, maxY/2, maxX/2+30, maxY/2+5, 0); err != nil {
+	if v, err := g.SetView(ViewWindow, maxX/2-30, maxY/2, maxX/2+30, maxY/2+10, 0); err != nil {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
 		g.Cursor = true
-		v.Title = "users"
+		v.Title = title
 		v.Editable = true
-		fmt.Fprintln(v, users)
-		if _, err := g.SetCurrentView(ViewUsers); err != nil {
+		fmt.Fprintln(v, text)
+		if _, err := g.SetCurrentView(ViewWindow); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func delUsersView(g *gocui.Gui, v *gocui.View) error {
-	if err := g.DeleteView(ViewUsers); err != nil {
+func closeWindow(g *gocui.Gui, v *gocui.View) error {
+	if err := g.DeleteView(ViewWindow); err != nil {
 		return err
 	}
 	if _, err := g.SetCurrentView(ViewMenu); err != nil {
