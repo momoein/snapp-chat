@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 
-# RUN go mod download
+RUN go mod download
 
 # Build the Go application binary
 RUN go build -o /app/server ./cmd/server/main.go
