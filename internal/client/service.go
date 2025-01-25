@@ -27,7 +27,6 @@ type Service interface {
 
 type service struct {
 	conn    *websocket.Conn
-	// cfg     config.Config
 	wsURL   string
 	httpURL string
 }
